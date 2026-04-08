@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DJ — London · St Tropez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Condiment&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+============================================================ */
+:root {
+  --bg:         #010828;
+  --bg2:        #020c35;
+  --gold:       #c9a96e;
+  --gold2:      #f0d080;
+  --white:      #f0eeea;
+  --muted:      rgba(240,238,234,0.45);
+  --glass-bg:   rgba(255,255,255,0.04);
+  --glass-border: rgba(201,169,110,0.18);
+  --glow:       rgba(201,169,110,0.25);
+  --font-head:  'Anton', sans-serif;
+  --font-sig:   'Condiment', cursive;
+  --font-body:  'DM Sans', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:#010828;
+  color:var(--white);
+  font-family:var(--font-body);
+  font-weight:300;
+  overflow-x:hidden;
+  cursor:none;
+}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+#cursor{
+  position:fixed;width:10px;height:10px;
+  background:var(--gold);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .15s,height .15s,background .15s;
+  mix-blend-mode:screen;
+}
+#cursor-ring{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(201,169,110,0.5);
+  border-radius:50%;pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform .08s ease-out,width .2s,height .2s,border-color .2s;
+}
+body:hover #cursor{opacity:1}
+
+/* ============================================================
+   GRAIN OVERLAY
+============================================================ */
+#grain{
+  position:fixed;inset:0;z-index:1000;
+  pointer-events:none;opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+  animation:grainShift 0.5s steps(2) infinite;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}
+  25%{transform:translate(-3px,2px)}
+  50%{transform:translate(3px,-2px)}
+  75%{transform:translate(-2px,3px)}
+  100%{transform:translate(2px,-1px)}
+}
+
+/* ============================================================
+   INTRO SCREEN
+============================================================ */
+#intro{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:24px;
+  transition:opacity 1s ease, visibility 1s ease;
+}
+#intro.hidden{opacity:0;visibility:hidden;pointer-events:none}
+#intro-logo{
+  width:min(440px,72vw);
+  opacity:0;
+  transform:scale(0.82);
+  filter:brightness(1.05) contrast(1.05) drop-shadow(0 0 60px rgba(201,169,110,0.55));
+  animation:introLogoIn 2.2s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+}
+@keyframes introLogoIn{
+  to{opacity:1;transform:scale(1)}
+}
+.intro-city{
+  font-family:var(--font-head);
+  font-size:clamp(12px,2vw,18px);
+  letter-spacing:0.45em;
+  color:var(--gold);
+  opacity:0;
+  transform:translateY(14px);
+}
+.intro-city:nth-child(2){animation:introCityIn 1s ease forwards 1.8s}
+.intro-city:nth-child(3){animation:introCityIn 1s ease forwards 2.2s}
+@keyframes introCityIn{
+  to{opacity:1;transform:translateY(0)}
+}
+.intro-line{
+  width:1px;height:40px;
+  background:linear-gradient(to bottom,transparent,var(--gold),transparent);
+  opacity:0;
+  animation:introCityIn 1s ease forwards 2.6s;
+}
+#intro-skip{
+  position:absolute;bottom:36px;right:40px;
+  font-family:var(--font-body);font-size:11px;letter-spacing:0.2em;
+  color:var(--muted);cursor:pointer;
+  opacity:0;animation:introCityIn .8s ease forwards 3s;
+  transition:color .3s;
+}
+#intro-skip:hover{color:var(--gold)}
+
+/* ============================================================
+   NAVBAR
+============================================================ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:800;
+  padding:20px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  background:rgba(1,8,40,0.55);
+  border-bottom:1px solid var(--glass-border);
+  transition:padding .4s;
+}
+nav.scrolled{padding:14px 48px;background:rgba(1,8,40,0.82)}
+.nav-logo img{height:40px;filter:brightness(1.1)}
+.nav-links{display:flex;gap:36px}
+.nav-links a{
+  font-family:var(--font-body);font-size:11px;font-weight:500;
+  letter-spacing:0.25em;text-transform:uppercase;color:var(--muted);
+  position:relative;transition:color .3s;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;right:100%;
+  height:1px;background:var(--gold);transition:right .3s ease;
+}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{right:0}
+.nav-cta{
+  font-family:var(--font-body);font-size:11px;font-weight:500;
+  letter-spacing:0.25em;text-transform:uppercase;
+  padding:10px 24px;
+  border:1px solid var(--glass-border);
+  background:var(--glass-bg);
+  backdrop-filter:blur(12px);
+  color:var(--gold);
+  border-radius:2px;
+  transition:all .3s;
+}
+.nav-cta:hover{background:rgba(201,169,110,0.12);border-color:var(--gold)}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer}
+.nav-burger span{width:24px;height:1px;background:var(--white);transition:all .3s}
+
+/* ============================================================
+   HERO
+============================================================ */
+#hero{
+  position:relative;height:100vh;min-height:600px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse 80% 70% at 50% 40%, #051440 0%, #010828 55%, #000510 100%);
+}
+.hero-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;
+}
+.hero-orb-1{
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(201,169,110,0.09) 0%,transparent 70%);
+  top:-100px;left:-100px;
+  animation:orbDrift1 14s ease-in-out infinite alternate;
+}
+.hero-orb-2{
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(10,40,120,0.4) 0%,transparent 70%);
+  bottom:-60px;right:-80px;
+  animation:orbDrift2 18s ease-in-out infinite alternate;
+}
+.hero-orb-3{
+  width:350px;height:350px;
+  background:radial-gradient(circle,rgba(201,169,110,0.06) 0%,transparent 70%);
+  bottom:20%;right:15%;
+  animation:orbDrift1 22s ease-in-out infinite alternate-reverse;
+}
+@keyframes orbDrift1{to{transform:translate(60px,40px)}}
+@keyframes orbDrift2{to{transform:translate(-50px,-30px)}}
+
+/* animated grid lines */
+.hero-grid{
+  position:absolute;inset:0;z-index:1;
+  background-image:
+    linear-gradient(rgba(201,169,110,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,169,110,0.025) 1px,transparent 1px);
+  background-size:80px 80px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 0%,transparent 100%);
+}
+
+.hero-content{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:28px;
+  opacity:0;animation:heroFadeIn 1.2s ease forwards 4s;
+}
+@keyframes heroFadeIn{to{opacity:1}}
+
+.hero-logo{
+  width:min(520px,68vw);
+  filter:drop-shadow(0 0 80px rgba(201,169,110,0.3)) drop-shadow(0 0 20px rgba(201,169,110,0.15));
+}
+.hero-tagline{
+  font-family:var(--font-sig);
+  font-size:clamp(20px,3.5vw,34px);
+  color:var(--gold);
+  letter-spacing:0.08em;
+  opacity:.9;
+}
+.hero-divider{
+  display:flex;align-items:center;gap:16px;
+  width:min(300px,60vw);
+}
+.hero-divider-line{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--glass-border))}
+.hero-divider-line:last-child{background:linear-gradient(to left,transparent,var(--glass-border))}
+.hero-divider-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.6}
+
+.hero-cities{
+  display:flex;gap:32px;align-items:center;
+}
+.hero-city-tag{
+  font-family:var(--font-head);
+  font-size:clamp(10px,1.4vw,13px);
+  letter-spacing:0.4em;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+.hero-city-sep{width:1px;height:20px;background:var(--glass-border)}
+
+.hero-socials{
+  display:flex;gap:12px;margin-top:8px;
+}
+.hero-social-btn{
+  width:42px;height:42px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--glass-border);
+  background:var(--glass-bg);
+  backdrop-filter:blur(12px);
+  border-radius:50%;
+  color:var(--muted);
+  font-size:15px;
+  transition:all .3s;
+}
+.hero-social-btn:hover{
+  background:rgba(201,169,110,0.1);
+  border-color:var(--gold);
+  color:var(--gold);
+  transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(201,169,110,0.15);
+}
+
+.hero-scroll{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  z-index:2;opacity:0;animation:heroFadeIn 1s ease forwards 5s;
+}
+.hero-scroll span{
+  font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--muted);
+}
+.scroll-line{
+  width:1px;height:48px;
+  background:linear-gradient(to bottom,var(--gold),transparent);
+  animation:scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse{
+  0%,100%{opacity:.3;transform:scaleY(.8)}
+  50%{opacity:1;transform:scaleY(1)}
+}
+
+/* ============================================================
+   SECTION SHARED
+============================================================ */
+.section{padding:120px 48px}
+.section-label{
+  font-family:var(--font-body);font-size:10px;font-weight:500;
+  letter-spacing:0.4em;text-transform:uppercase;
+  color:var(--gold);opacity:.7;
+  display:flex;align-items:center;gap:16px;
+}
+.section-label::before{
+  content:'';width:32px;height:1px;background:var(--gold);opacity:.5;
+}
+.section-title{
+  font-family:var(--font-head);
+  font-size:clamp(38px,6vw,80px);
+  line-height:.95;
+  letter-spacing:-.01em;
+  color:var(--white);
+  margin-top:16px;
+}
+.gold-word{color:var(--gold)}
+
+/* ============================================================
+   ABOUT
+============================================================ */
+#about{
+  position:relative;overflow:hidden;
+  background:linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%);
+}
+.about-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+.about-left{}
+.about-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  margin-top:56px;
+  border:1px solid var(--glass-border);
+  background:var(--glass-border);
+  border-radius:4px;overflow:hidden;
+}
+.stat-box{
+  background:var(--glass-bg);
+  backdrop-filter:blur(12px);
+  padding:28px 24px;
+  display:flex;flex-direction:column;gap:6px;
+  transition:background .3s;
+}
+.stat-box:hover{background:rgba(201,169,110,0.06)}
+.stat-num{
+  font-family:var(--font-head);
+  font-size:clamp(32px,4vw,52px);
+  color:var(--gold);
+  line-height:1;
+}
+.stat-label{
+  font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);
+}
+
+.about-right{
+  display:flex;flex-direction:column;gap:28px;
+}
+.about-quote{
+  font-family:var(--font-sig);
+  font-size:clamp(24px,3vw,38px);
+  color:var(--gold);
+  line-height:1.3;
+  border-left:2px solid var(--gold);
+  padding-left:24px;
+  opacity:.9;
+}
+.about-text{
+  font-size:clamp(14px,1.1vw,16px);
+  line-height:1.85;
+  color:var(--muted);
+  max-width:520px;
+}
+.about-tags{
+  display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;
+}
+.tag{
+  padding:6px 16px;
+  border:1px solid var(--glass-border);
+  background:var(--glass-bg);
+  backdrop-filter:blur(8px);
+  border-radius:1px;
+  font-size:10px;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--muted);
+  transition:all .3s;
+}
+.tag:hover{border-color:var(--gold);color:var(--gold)}
+
+/* about deco */
+.about-deco{
+  position:absolute;right:-80px;top:50%;transform:translateY(-50%);
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,169,110,0.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* ============================================================
+   RESIDENCY MARQUEE
+============================================================ */
+#residency{
+  padding:60px 0;
+  border-top:1px solid var(--glass-border);
+  border-bottom:1px solid var(--glass-border);
+  background:rgba(201,169,110,0.02);
+  overflow:hidden;
+}
+.marquee-track{
+  display:flex;gap:0;
+  animation:marqueeScroll 22s linear infinite;
+  white-space:nowrap;
+}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes marqueeScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+.marquee-item{
+  display:inline-flex;align-items:center;gap:24px;
+  padding:0 56px;
+}
+.marquee-item a{
+  font-family:var(--font-head);
+  font-size:clamp(14px,2vw,22px);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  transition:color .3s;
+}
+.marquee-item a:hover{color:var(--gold)}
+.marquee-sep{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--gold);opacity:.4;
+}
+
+/* ============================================================
+   GALLERY
+============================================================ */
+#gallery{
+  padding:120px 0;
+  overflow:hidden;
+  background:var(--bg);
+}
+.gallery-header{
+  padding:0 48px;margin-bottom:56px;
+}
+.gallery-row{
+  display:flex;gap:16px;
+  width:max-content;
+  margin-bottom:16px;
+}
+.gallery-row-1{animation:galleryScroll 35s linear infinite}
+.gallery-row-2{animation:galleryScroll 42s linear infinite reverse}
+@keyframes galleryScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+.gallery-item{
+  position:relative;
+  width:320px;height:220px;
+  border-radius:6px;overflow:hidden;
+  flex-shrink:0;
+  border:1px solid var(--glass-border);
+}
+.gallery-item img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .6s ease;
+  will-change:transform;
+}
+.gallery-item:hover img{transform:scale(1.06)}
+.gallery-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(1,8,40,0.6) 0%,transparent 60%);
+  opacity:0;
+  transition:opacity .4s;
+}
+.gallery-item:hover .gallery-overlay{opacity:1}
+.gallery-item-glow{
+  position:absolute;inset:0;
+  box-shadow:inset 0 0 0 1px rgba(201,169,110,0.15);
+  border-radius:6px;
+  opacity:0;transition:opacity .4s;
+}
+.gallery-item:hover .gallery-item-glow{opacity:1}
+
+/* ============================================================
+   MAP SECTION
+============================================================ */
+#worldmap{
+  padding:120px 48px;
+  position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--bg) 0%,#020e3a 50%,var(--bg) 100%);
+}
+.worldmap-inner{max-width:1200px;margin:0 auto}
+.worldmap-header{margin-bottom:64px}
+.map-container{
+  position:relative;
+  width:100%;
+  max-width:900px;
+  margin:0 auto;
+}
+/* SVG world map embedded inline via JS */
+#map-svg-wrap{
+  width:100%;
+  filter:drop-shadow(0 0 40px rgba(201,169,110,0.04));
+  opacity:.7;
+}
+.map-point{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;
+  gap:6px;
+  cursor:default;
+}
+.map-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 12px var(--gold),0 0 30px rgba(201,169,110,.4);
+  animation:mapPulse 2.5s ease-in-out infinite;
+}
+.map-dot::after{
+  content:'';position:absolute;
+  width:20px;height:20px;
+  border-radius:50%;
+  border:1px solid rgba(201,169,110,.3);
+  animation:mapRing 2.5s ease-out infinite;
+  top:-6px;left:-6px;
+}
+@keyframes mapPulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.3);opacity:.7}
+}
+@keyframes mapRing{
+  0%{transform:scale(1);opacity:.6}
+  100%{transform:scale(2.5);opacity:0}
+}
+.map-label{
+  font-family:var(--font-body);font-size:9px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);opacity:.8;
+  white-space:nowrap;
+  background:rgba(1,8,40,.75);
+  padding:3px 8px;border-radius:2px;
+  border:1px solid rgba(201,169,110,.15);
+}
+
+/* ============================================================
+   CONTACT / BOOKING
+============================================================ */
+#contact{
+  padding:120px 48px;
+  position:relative;
+  background:var(--bg);
+}
+.contact-inner{
+  max-width:900px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;
+}
+.contact-left .section-title{font-size:clamp(34px,5vw,68px)}
+.contact-email{
+  font-family:var(--font-sig);
+  font-size:clamp(20px,2.5vw,30px);
+  color:var(--gold);
+  margin-top:24px;
+  display:inline-block;
+  border-bottom:1px solid rgba(201,169,110,.3);
+  padding-bottom:8px;
+  transition:border-color .3s;
+}
+.contact-email:hover{border-color:var(--gold)}
+
+.glass-form{
+  display:flex;flex-direction:column;gap:16px;
+}
+.form-field{
+  display:flex;flex-direction:column;gap:8px;
+}
+.form-field label{
+  font-size:9px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--muted);
+}
+.form-field input,
+.form-field textarea{
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(12px);
+  padding:14px 18px;
+  color:var(--white);
+  font-family:var(--font-body);font-size:14px;
+  outline:none;border-radius:2px;
+  transition:border-color .3s,box-shadow .3s;
+  resize:none;
+}
+.form-field input::placeholder,
+.form-field textarea::placeholder{color:rgba(240,238,234,.2)}
+.form-field input:focus,
+.form-field textarea:focus{
+  border-color:rgba(201,169,110,.5);
+  box-shadow:0 0 20px rgba(201,169,110,.07);
+}
+.form-submit{
+  margin-top:8px;padding:15px 36px;
+  background:transparent;
+  border:1px solid var(--gold);
+  color:var(--gold);
+  font-family:var(--font-body);font-size:11px;font-weight:500;
+  letter-spacing:.25em;text-transform:uppercase;
+  cursor:pointer;border-radius:2px;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.form-submit::before{
+  content:'';position:absolute;inset:0;
+  background:var(--gold);
+  transform:translateX(-105%);
+  transition:transform .4s ease;
+}
+.form-submit:hover{color:var(--bg)}
+.form-submit:hover::before{transform:translateX(0)}
+.form-submit span{position:relative;z-index:1}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer{
+  padding:48px;
+  border-top:1px solid var(--glass-border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(1,8,40,.8);
+}
+.footer-logo img{height:34px;opacity:.7;filter:brightness(1.05)}
+.footer-copy{
+  font-size:10px;letter-spacing:.2em;color:var(--muted);text-align:center;
+}
+.footer-socials{display:flex;gap:16px}
+.footer-social{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+  transition:color .3s;
+}
+.footer-social:hover{color:var(--gold)}
+
+/* ============================================================
+   SCROLL ANIMATIONS
+============================================================ */
+.reveal{
+  opacity:0;transform:translateY(30px);
+  transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* ============================================================
+   MOBILE NAV
+============================================================ */
+#mobile-menu{
+  display:none;position:fixed;inset:0;z-index:850;
+  background:rgba(1,8,40,.97);
+  backdrop-filter:blur(20px);
+  flex-direction:column;align-items:center;justify-content:center;gap:36px;
+}
+#mobile-menu.open{display:flex}
+#mobile-menu a{
+  font-family:var(--font-head);font-size:clamp(26px,6vw,40px);
+  letter-spacing:.04em;color:var(--white);
+  transition:color .3s;
+}
+#mobile-menu a:hover{color:var(--gold)}
+.menu-close{
+  position:absolute;top:24px;right:36px;
+  font-size:28px;color:var(--muted);cursor:pointer;
+  transition:color .3s;
+}
+.menu-close:hover{color:var(--gold)}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media(max-width:900px){
+  .section{padding:80px 24px}
+  .about-inner{grid-template-columns:1fr;gap:48px}
+  .about-deco{display:none}
+  .contact-inner{grid-template-columns:1fr;gap:48px}
+  .nav-links,.nav-cta{display:none}
+  .nav-burger{display:flex}
+  nav{padding:18px 24px}
+  footer{flex-direction:column;gap:20px;text-align:center;padding:36px 24px}
+  .gallery-item{width:240px;height:165px}
+  .section-title{font-size:clamp(32px,7vw,56px)}
+  #worldmap{padding:80px 24px}
+  #contact{padding:80px 24px}
+}
+@media(max-width:600px){
+  .about-stats{grid-template-columns:1fr 1fr}
+  .hero-socials{gap:8px}
+  .hero-social-btn{width:36px;height:36px;font-size:13px}
+  .gallery-item{width:200px;height:140px}
+}
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- GRAIN -->
+<div id="grain"></div>
+
+<!-- ============================================================
+     INTRO
+============================================================ -->
+<div id="intro">
+  <img id="intro-logo" src="https://i.imgur.com/WVrPgWN.jpg" alt="DJ Logo">
+  <div class="intro-line"></div>
+  <p class="intro-city">LONDON</p>
+  <p class="intro-city">ST TROPEZ</p>
+  <span id="intro-skip" onclick="skipIntro()">SKIP ›</span>
+</div>
+
+<!-- ============================================================
+     MOBILE MENU
+============================================================ -->
+<div id="mobile-menu">
+  <span class="menu-close" onclick="closeMobileMenu()">✕</span>
+  <a href="#about" onclick="closeMobileMenu()">About</a>
+  <a href="#gallery" onclick="closeMobileMenu()">Gallery</a>
+  <a href="#worldmap" onclick="closeMobileMenu()">World</a>
+  <a href="#contact" onclick="closeMobileMenu()">Booking</a>
+</div>
+
+<!-- ============================================================
+     NAVBAR
+============================================================ -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <a href="#hero"><img src="https://i.imgur.com/WVrPgWN.jpg" alt="Logo"></a>
+  </div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#worldmap">World</a>
+    <a href="#contact">Booking</a>
+  </div>
+  <a href="#contact" class="nav-cta">Book Now</a>
+  <div class="nav-burger" onclick="openMobileMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section id="hero">
+  <div class="hero-bg">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+  </div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <img class="hero-logo" src="https://i.imgur.com/WVrPgWN.jpg" alt="DJ Logo">
+
+    <p class="hero-tagline">Where music becomes a ritual</p>
+
+    <div class="hero-divider">
+      <div class="hero-divider-line"></div>
+      <div class="hero-divider-dot"></div>
+      <div class="hero-divider-line"></div>
+    </div>
+
+    <div class="hero-cities">
+      <span class="hero-city-tag">London</span>
+      <div class="hero-city-sep"></div>
+      <span class="hero-city-tag">Ibiza</span>
+      <div class="hero-city-sep"></div>
+      <span class="hero-city-tag">St Tropez</span>
+      <div class="hero-city-sep"></div>
+      <span class="hero-city-tag">Dubai</span>
+    </div>
+
+    <div class="hero-socials">
+      <!-- Instagram -->
+      <a href="#" class="hero-social-btn" aria-label="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+      <!-- SoundCloud -->
+      <a href="#" class="hero-social-btn" aria-label="SoundCloud">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M1.175 12.225c-.015 0-.03.003-.045.003a3.9 3.9 0 0 0-.393 7.782l11.325.003c.3 0 .536-.24.536-.537V8.4a.537.537 0 0 0-.386-.514 6.66 6.66 0 0 0-1.886-.27 6.735 6.735 0 0 0-6.217 4.17 3.9 3.9 0 0 0-2.934.44zm17.14-6.21a5.4 5.4 0 0 0-5.14 3.705.537.537 0 0 0 .357.674.54.54 0 0 0 .674-.357 4.32 4.32 0 0 1 4.11-2.97 4.32 4.32 0 0 1 4.32 4.32 4.32 4.32 0 0 1-4.32 4.32h-.003a.54.54 0 0 0-.537.537.54.54 0 0 0 .537.537h.003a5.4 5.4 0 0 0 5.4-5.394 5.4 5.4 0 0 0-5.4-5.372z"/></svg>
+      </a>
+      <!-- Mixcloud -->
+      <a href="#" class="hero-social-btn" aria-label="Mixcloud">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.56 8.87V17h4.15c2.42 0 4.4-1.96 4.4-4.37s-1.98-4.37-4.4-4.37c-.35 0-.69.04-1.02.12.06-.35.1-.71.1-1.08C14.79 4.61 12.93 3 10.67 3c-2.26 0-4.12 1.61-4.12 3.72 0 .38.06.74.17 1.08A3.6 3.6 0 0 0 5.4 7.7 3.6 3.6 0 0 0 1.8 11.3c0 1.99 1.61 3.6 3.6 3.6h3.14V8.87h3.02zM9.58 8.87v5.55H5.4a2.25 2.25 0 0 1-2.25-2.25 2.25 2.25 0 0 1 2.25-2.25c.34 0 .67.08.97.22l.72.33.16-.78c.17-.86.68-1.53 1.38-1.93v.88l.95.23z"/></svg>
+      </a>
+      <!-- Facebook -->
+      <a href="#" class="hero-social-btn" aria-label="Facebook">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ABOUT
+============================================================ -->
+<section id="about" class="section">
+  <div class="about-deco"></div>
+  <div class="about-inner">
+    <div class="about-left reveal">
+      <div class="section-label">Biographie</div>
+      <h2 class="section-title">UN<br><span class="gold-word">ARTISTE</span><br>GLOBAL</h2>
+      <div class="about-stats reveal reveal-delay-1">
+        <div class="stat-box">
+          <div class="stat-num">15+</div>
+          <div class="stat-label">Années d'expérience</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">40+</div>
+          <div class="stat-label">Pays couverts</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">500+</div>
+          <div class="stat-label">Performances</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Résidences actives</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-right reveal reveal-delay-2">
+      <p class="about-quote">"Chaque set est une invitation à l'évasion."</p>
+      <p class="about-text">
+        DJ basé à Londres depuis 2010, il s'est imposé comme une référence dans la scène électronique internationale. Sa présence sur les plus grandes scènes — de la Côte d'Azur aux clubs d'Ibiza, de Dubaï à Marrakech — témoigne d'un savoir-faire rare et d'une sensibilité musicale affûtée.
+      </p>
+      <p class="about-text">
+        Avec des résidences dans des établissements d'exception tels que Bagatelle St Tropez, Isabel W1 à Londres et Los Mochis London City, il incarne une vision exigeante de la musique : précise, élégante, inoubliable.
+      </p>
+      <div class="about-tags">
+        <span class="tag">Deep House</span>
+        <span class="tag">Afro House</span>
+        <span class="tag">Nu Disco</span>
+        <span class="tag">Melodic Techno</span>
+        <span class="tag">Organic</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     RESIDENCY MARQUEE
+============================================================ -->
+<div id="residency">
+  <div class="marquee-track">
+    <!-- First set -->
+    <div class="marquee-item">
+      <a href="https://bagatelle.com/venues/st-tropez" target="_blank">Bagatelle · St Tropez</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <div class="marquee-item">
+      <a href="https://www.isabelw1.london/" target="_blank">Isabel W1 · London</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <div class="marquee-item">
+      <a href="https://www.losmochis.co.uk/lc/london-city" target="_blank">Los Mochis · London City</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <!-- Duplicate for infinite scroll -->
+    <div class="marquee-item">
+      <a href="https://bagatelle.com/venues/st-tropez" target="_blank">Bagatelle · St Tropez</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <div class="marquee-item">
+      <a href="https://www.isabelw1.london/" target="_blank">Isabel W1 · London</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <div class="marquee-item">
+      <a href="https://www.losmochis.co.uk/lc/london-city" target="_blank">Los Mochis · London City</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <!-- Third set -->
+    <div class="marquee-item">
+      <a href="https://bagatelle.com/venues/st-tropez" target="_blank">Bagatelle · St Tropez</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <div class="marquee-item">
+      <a href="https://www.isabelw1.london/" target="_blank">Isabel W1 · London</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <div class="marquee-item">
+      <a href="https://www.losmochis.co.uk/lc/london-city" target="_blank">Los Mochis · London City</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <!-- Fourth set -->
+    <div class="marquee-item">
+      <a href="https://bagatelle.com/venues/st-tropez" target="_blank">Bagatelle · St Tropez</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <div class="marquee-item">
+      <a href="https://www.isabelw1.london/" target="_blank">Isabel W1 · London</a>
+      <div class="marquee-sep"></div>
+    </div>
+    <div class="marquee-item">
+      <a href="https://www.losmochis.co.uk/lc/london-city" target="_blank">Los Mochis · London City</a>
+      <div class="marquee-sep"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     GALLERY
+============================================================ -->
+<section id="gallery">
+  <div class="gallery-header reveal">
+    <div class="section-label">Galerie</div>
+    <h2 class="section-title">EN <span class="gold-word">SCÈNE</span></h2>
+  </div>
+
+  <!-- Row 1 -->
+  <div style="overflow:hidden;margin-bottom:16px">
+    <div class="gallery-row gallery-row-1">
+      <!-- first set -->
+      <div class="gallery-item"><img src="https://i.imgur.com/jmexVBG.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/pfGp6n8.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/WENeaOp.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/9xRDSwd.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/hB5O9tO.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/5Sc8rWk.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <!-- duplicate -->
+      <div class="gallery-item"><img src="https://i.imgur.com/jmexVBG.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/pfGp6n8.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/WENeaOp.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/9xRDSwd.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/hB5O9tO.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/5Sc8rWk.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div style="overflow:hidden">
+    <div class="gallery-row gallery-row-2">
+      <!-- first set -->
+      <div class="gallery-item"><img src="https://i.imgur.com/QEI5COs.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/CbCcpPB.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/KpfDTOg.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/o9yDxgZ.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/748GhnF.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/uQHQn8j.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <!-- duplicate -->
+      <div class="gallery-item"><img src="https://i.imgur.com/QEI5COs.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/CbCcpPB.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/KpfDTOg.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/o9yDxgZ.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/748GhnF.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+      <div class="gallery-item"><img src="https://i.imgur.com/uQHQn8j.jpg" alt=""><div class="gallery-overlay"></div><div class="gallery-item-glow"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     WORLD MAP
+============================================================ -->
+<section id="worldmap">
+  <div class="worldmap-inner">
+    <div class="worldmap-header reveal">
+      <div class="section-label">Présence Mondiale</div>
+      <h2 class="section-title">LA <span class="gold-word">SCÈNE</span><br>EST GLOBALE</h2>
+    </div>
+    <div class="map-container reveal reveal-delay-1">
+      <div id="map-svg-wrap"></div>
+      <!-- Map points positioned via JS after SVG load -->
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT / BOOKING
+============================================================ -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="contact-left reveal">
+      <div class="section-label">Booking</div>
+      <h2 class="section-title">RÉSERVEZ<br><span class="gold-word">UNE DATE</span></h2>
+      <a href="mailto:booking@dj.com" class="contact-email">booking@dj.com</a>
+      <p class="about-text" style="margin-top:24px">
+        Pour toute demande de réservation, événement privé ou résidence internationale, contactez-nous directement. Réponse sous 24h.
+      </p>
+    </div>
+    <div class="contact-right reveal reveal-delay-2">
+      <div class="glass-form">
+        <div class="form-field">
+          <label>Nom complet</label>
+          <input type="text" placeholder="Votre nom">
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" placeholder="votre@email.com">
+        </div>
+        <div class="form-field">
+          <label>Type d'événement</label>
+          <input type="text" placeholder="Club, festival, privé...">
+        </div>
+        <div class="form-field">
+          <label>Message</label>
+          <textarea rows="4" placeholder="Décrivez votre projet..."></textarea>
+        </div>
+        <button class="form-submit"><span>Envoyer la demande ›</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+  <div class="footer-logo">
+    <img src="https://i.imgur.com/WVrPgWN.jpg" alt="Logo">
+  </div>
+  <p class="footer-copy">© 2025 — DJ London · All rights reserved</p>
+  <div class="footer-socials">
+    <a href="#" class="footer-social">Instagram</a>
+    <a href="#" class="footer-social">SoundCloud</a>
+    <a href="#" class="footer-social">Mixcloud</a>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+/* ---- Cursor ---- */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+});
+function animateRing(){
+  rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+document.querySelectorAll('a,button,.hero-social-btn,.tag,.stat-box').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cursor.style.width='18px'; cursor.style.height='18px';
+    ring.style.width='56px'; ring.style.height='56px';
+    ring.style.borderColor='rgba(201,169,110,.8)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cursor.style.width='10px'; cursor.style.height='10px';
+    ring.style.width='36px'; ring.style.height='36px';
+    ring.style.borderColor='rgba(201,169,110,.5)';
+  });
+});
+
+/* ---- Intro ---- */
+function skipIntro(){
+  document.getElementById('intro').classList.add('hidden');
+  document.body.style.overflow='auto';
+}
+// Auto-skip after 5s
+setTimeout(skipIntro, 5000);
+// Block scroll during intro
+document.body.style.overflow='hidden';
+
+/* ---- Navbar scroll ---- */
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* ---- Mobile menu ---- */
+function openMobileMenu(){ document.getElementById('mobile-menu').classList.add('open'); }
+function closeMobileMenu(){ document.getElementById('mobile-menu').classList.remove('open'); }
+
+/* ---- Scroll reveal ---- */
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.12});
+reveals.forEach(r=>io.observe(r));
+
+/* ---- World Map SVG ---- */
+(function buildMap(){
+  const wrap = document.getElementById('map-svg-wrap');
+
+  // Simplified world map paths (Robinson-like projection)
+  // Cities: London, Ibiza, St Tropez, Dubai, Marrakech, Abidjan
+  // Coordinates (approximate % of SVG 900x460 canvas)
+  const cities = [
+    {name:'London',     x:46.5, y:28},
+    {name:'Ibiza',      x:46.0, y:35},
+    {name:'St Tropez',  x:48.5, y:34},
+    {name:'Dubai',      x:59.5, y:39},
+    {name:'Marrakech',  x:43.5, y:38},
+    {name:'Abidjan',    x:42.5, y:47},
+  ];
+
+  // Embed a minimal SVG world map (simplified continents)
+  wrap.innerHTML = `
+<svg viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+  <defs>
+    <filter id="mapGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="mapGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a1a4a"/>
+      <stop offset="100%" stop-color="#010828"/>
+    </linearGradient>
+  </defs>
+  <!-- Ocean background -->
+  <rect width="900" height="460" fill="url(#mapGrad)" rx="4"/>
+
+  <!-- Continents simplified -->
+  <!-- North America -->
+  <path d="M30 60 L140 55 L170 70 L200 90 L210 130 L195 160 L175 180 L150 200 L130 230 L110 260 L90 280 L70 260 L50 230 L40 200 L20 170 L10 140 L15 100 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- South America -->
+  <path d="M130 270 L175 250 L210 265 L230 300 L240 340 L220 380 L190 410 L160 420 L135 400 L118 370 L110 330 L115 300 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- Europe -->
+  <path d="M390 50 L450 45 L480 55 L490 70 L475 90 L455 100 L430 95 L410 85 L395 70 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- Africa -->
+  <path d="M390 110 L455 100 L490 115 L510 150 L515 200 L505 250 L490 300 L460 340 L425 360 L395 350 L370 310 L355 270 L355 220 L365 175 L375 140 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- Middle East & Central Asia -->
+  <path d="M490 80 L570 75 L600 90 L610 115 L590 130 L560 135 L520 125 L495 110 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- South Asia -->
+  <path d="M570 100 L640 95 L670 115 L675 145 L655 165 L625 170 L595 155 L575 135 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- East Asia -->
+  <path d="M640 55 L740 50 L790 70 L800 110 L775 140 L740 150 L700 140 L665 120 L645 95 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- Southeast Asia / Indonesia -->
+  <path d="M680 160 L720 155 L755 165 L760 185 L730 195 L695 188 L678 175 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- Australia -->
+  <path d="M700 260 L790 255 L840 275 L855 315 L845 355 L810 375 L765 370 L730 345 L710 310 L700 280 Z" fill="#0d1e55" opacity="0.85"/>
+  <!-- UK/Ireland (detailed) -->
+  <path d="M418 52 L428 50 L433 58 L428 65 L420 63 L415 57 Z" fill="#162060" opacity="0.9"/>
+
+  <!-- Grid lines (parallels / meridians) -->
+  <g stroke="rgba(201,169,110,0.06)" stroke-width="0.5">
+    <line x1="0" y1="115" x2="900" y2="115"/>
+    <line x1="0" y1="230" x2="900" y2="230"/>
+    <line x1="0" y1="345" x2="900" y2="345"/>
+    <line x1="225" y1="0" x2="225" y2="460"/>
+    <line x1="450" y1="0" x2="450" y2="460"/>
+    <line x1="675" y1="0" x2="675" y2="460"/>
+  </g>
+
+  <!-- City dots and rings will be placed as absolutely positioned HTML -->
+</svg>`;
+
+  // Position HTML dots over SVG
+  cities.forEach(c=>{
+    const dot = document.createElement('div');
+    dot.className = 'map-point';
+    dot.style.cssText = `left:${c.x}%;top:${c.y}%;`;
+    dot.innerHTML = `<div class="map-dot"></div><div class="map-label">${c.name}</div>`;
+    wrap.style.position='relative';
+    wrap.appendChild(dot);
+  });
+
+  // Stagger animation
+  document.querySelectorAll('.map-dot').forEach((d,i)=>{
+    d.style.animationDelay = (i * 0.4)+'s';
+  });
+})();
+</script>
+</body>
+</html>
